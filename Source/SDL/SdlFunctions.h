@@ -15,7 +15,11 @@ inline constexpr int SDL_SCANCODE_D = 7;
 inline constexpr int SDL_SCANCODE_S = 22;
 inline constexpr int SDL_SCANCODE_W = 26;
 inline constexpr int SDL_SCANCODE_SPACE = 44;
+inline constexpr int SDL_SCANCODE_LCTRL = 224;
 inline constexpr int SDL_SCANCODE_LSHIFT = 225;
+inline constexpr int SDL_SCANCODE_LALT = 226;
+inline constexpr int SDL_SCANCODE_RCTRL = 228;
 inline constexpr int SDL_SCANCODE_RSHIFT = 229;
+inline constexpr int SDL_SCANCODE_RALT = 230;
 
 }
