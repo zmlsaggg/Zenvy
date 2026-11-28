@@ -75,9 +75,9 @@ void ViewRenderHook_onRenderStart(cs2::CViewRender* thisptr) noexcept
     soundWatcher.update();
     SoundFeatures{hookContext.soundWatcherState(), hookContext.hooks().viewRenderHook, hookContext}.runOnViewMatrixUpdate();
 
+    hookContext.updateInputState();
+    hookContext.make<Fly>().run();
     hookContext.make<NoScopeInaccuracyVis>().update();
-    // Temporary isolation: bypass the two newly added per-frame callbacks to locate
-    // the immediate post-injection crash without changing their implementations.
     hookContext.make<RenderingHookEntityLoop>().run();
     hookContext.make<GlowSceneObjects>().removeUnreferencedObjects();
     hookContext.make<DefusingAlert>().run();
