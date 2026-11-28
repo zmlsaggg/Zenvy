@@ -27,14 +27,14 @@ public:
             return;
 
         auto&& playerPawn = hookContext.activeLocalPlayerPawn();
-        if (!playerPawn || !playerPawn.isAlive().valueOr(false))
+        if (!playerPawn || !playerPawn.isAlive().value_or(false))
             return;
 
         const auto absOrigin = playerPawn.absOrigin();
         if (!absOrigin.hasValue())
             return;
 
-        const auto currentVelocity = playerPawn.velocity().valueOr(cs2::Vector{});
+        const auto currentVelocity = playerPawn.velocity().value_or(cs2::Vector{});
         const auto targetVelocity = calculateTargetVelocity(playerPawn);
 
         auto& stored = state().velocity;
@@ -78,7 +78,7 @@ private:
     {
         cs2::Vector target{};
 
-        const auto angles = playerPawn.eyeAngles().valueOr(cs2::Vector{});
+        const auto angles = playerPawn.eyeAngles().value_or(cs2::Vector{});
         const auto pitch = degToRad(angles.x);
         const auto yaw = degToRad(angles.y);
 
