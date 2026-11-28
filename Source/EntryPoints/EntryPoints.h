@@ -45,6 +45,7 @@ int SDLHook_PeepEvents(void* events, int numevents, int action, unsigned minType
     hookContext.template make<PlayerModelGlowPreview>().onUnload();
     hookContext.template make<WeaponModelGlowPreview>().onUnload();
     hookContext.template make<NoScopeInaccuracyVis>().onUnload();
+    hookContext.template make<Wallhack>().onUnload();
     hookContext.template make<BombPlantAlert>().onUnload();
 
     hookContext.template make<EntitySystem>().forEachNetworkableEntityIdentity([&hookContext](const auto& entityIdentity) {
