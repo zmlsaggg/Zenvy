@@ -178,6 +178,13 @@ protected:
         get<fly_vars::SpeedMultiplier>() = 1.0f;
         get<fly_vars::FlyKey>() = 0;
         get<wallhack_vars::Enabled>() = false;
+        get<wallhack_vars::ShowEnemies>() = true;
+        get<wallhack_vars::ShowTeammates>() = true;
+        get<wallhack_vars::ShowBoxes>() = true;
+        get<wallhack_vars::ShowSkeleton>() = true;
+        get<wallhack_vars::ShowInfo>() = true;
+        get<wallhack_vars::ShowDistance>() = true;
+        get<wallhack_vars::ShowHealth>() = true;
     }
 
     struct VariableChecker {
