@@ -24,21 +24,34 @@ public:
 
     void drawForPlayer(auto&& playerPawn) const noexcept
     {
-        if (!enabled() || !shouldDraw(playerPawn))
+        const auto index = skeletonIndexOf(playerPawn);
+        if (index >= WallhackState::kMaxPlayers)
             return;
+
+        auto& skeleton = state().skeletons[index];
+        if (!enabled() || !shouldDraw(playerPawn)) {
+            hideSkeleton(skeleton);
+            return;
+        }
 
         const auto absOrigin = playerPawn.absOrigin();
-        if (!absOrigin.hasValue())
+        if (!absOrigin.hasValue()) {
+            hideSkeleton(skeleton);
             return;
+        }
 
-        if (!hookContext.template make<WorldToClipSpaceConverter>().toClipSpace(absOrigin.value()).onScreen())
+        if (!hookContext.template make<WorldToClipSpaceConverter>().toClipSpace(absOrigin.value()).onScreen()) {
+            hideSkeleton(skeleton);
             return;
+        }
 
         if (showInfo())
             drawInfoPanel(playerPawn, absOrigin.value());
 
         if (showSkeleton())
-            drawSkeleton(playerPawn, absOrigin.value());
+            drawSkeleton(playerPawn, absOrigin.value(), skeleton);
+        else
+            hideSkeleton(skeleton);
     }
 
     void onUnload() const noexcept
@@ -77,13 +90,8 @@ private:
         panel.updatePosition(position);
     }
 
-    void drawSkeleton(auto&& playerPawn, const cs2::Vector& origin) const noexcept
+    void drawSkeleton(auto&& playerPawn, const cs2::Vector& origin, auto& skeleton) const noexcept
     {
-        const auto index = skeletonIndexOf(playerPawn);
-        if (index >= WallhackState::kMaxPlayers)
-            return;
-
-        auto& skeleton = state().skeletons[index];
         skeleton.active = true;
 
         static constexpr float kOffsets[WallhackState::kJoints]{
@@ -93,8 +101,10 @@ private:
         for (std::size_t joint = 0; joint < WallhackState::kJoints; ++joint) {
             const auto point = origin + cs2::Vector{0.0f, 0.0f, kOffsets[joint]};
             const auto clip = hookContext.template make<WorldToClipSpaceConverter>().toClipSpace(point);
-            if (!clip.onScreen())
+            if (!clip.onScreen()) {
+                hideJointPanel(skeleton, joint);
                 continue;
+            }
 
             auto&& panel = jointPanel(skeleton, joint);
             if (!panel)
@@ -112,6 +122,24 @@ private:
                 : cs2::Color{120, 200, 255, 220});
             positionPanel(panel, clip);
         }
+    }
+
+    void hideSkeleton(auto& skeleton) const noexcept
+    {
+        for (std::size_t joint = 0; joint < WallhackState::kJoints; ++joint)
+            hideJointPanel(skeleton, joint);
+        skeleton.active = false;
+    }
+
+    void hideJointPanel(auto& skeleton, std::size_t joint) const noexcept
+    {
+        auto& handle = skeleton.jointHandles[joint];
+        if (!handle.isValid())
+            return;
+
+        auto&& panel = hookContext.template make<PanelHandle>(handle).get();
+        if (panel)
+            panel.setVisible(false);
     }
 
     void positionPanel(auto&& panel, const auto& clip) const noexcept
