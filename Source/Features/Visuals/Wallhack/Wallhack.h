@@ -61,11 +61,11 @@ private:
 
     [[nodiscard]] bool shouldDraw(auto&& playerPawn) const noexcept
     {
-        if (!playerPawn.isAlive().valueOr(false))
+        if (!playerPawn.isAlive().value_or(false))
             return false;
         if (playerPawn.isControlledByLocalPlayer())
             return false;
-        if (playerPawn.isEnemy().valueOr(true))
+        if (playerPawn.isEnemy().value_or(true))
             return showEnemies();
         return showTeammates();
     }
@@ -107,7 +107,7 @@ private:
             panel.setWidth(cs2::CUILength{size, cs2::CUILength::k_EUILengthLength});
             panel.setHeight(cs2::CUILength{size, cs2::CUILength::k_EUILengthLength});
             panel.setPosition(cs2::CUILength::percent(50.0f), cs2::CUILength::percent(50.0f));
-            panel.setBackgroundColor(playerPawn.isEnemy().valueOr(true)
+            panel.setBackgroundColor(playerPawn.isEnemy().value_or(true)
                 ? cs2::Color{255, 80, 80, 220}
                 : cs2::Color{120, 200, 255, 220});
             positionPanel(panel, clip);
@@ -135,8 +135,10 @@ private:
 
     [[nodiscard]] std::size_t skeletonIndexOf(auto&& playerPawn) const noexcept
     {
-        const auto handle = playerPawn.baseEntity().handle();
-        return static_cast<std::size_t>(handle.ToInt() & (WallhackState::kMaxPlayers - 1));
+        const auto entityIndex = playerPawn.baseEntity().handle().index();
+        if (!entityIndex.isValid())
+            return WallhackState::kMaxPlayers;
+        return static_cast<std::size_t>(entityIndex.value) % WallhackState::kMaxPlayers;
     }
 
     [[nodiscard]] float distanceTo(const cs2::Vector& position) const noexcept
