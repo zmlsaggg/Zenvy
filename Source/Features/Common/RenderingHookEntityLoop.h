@@ -8,6 +8,7 @@
 #include <Features/Visuals/ModelGlow/ModelGlow.h>
 #include <Features/Visuals/OutlineGlow/OutlineGlow.h>
 #include <Features/Visuals/PlayerInfoInWorld/PlayerInfoInWorld.h>
+#include <Features/Visuals/Wallhack/Wallhack.h>
 #include <GameClient/EntitySystem/EntitySystem.h>
 #include <Features/Hud/BombPlantAlert/BombPlantAlert.h>
 
@@ -37,6 +38,7 @@ private:
         if (entityTypeInfo.template is<cs2::C_CSPlayerPawn>()) {
             auto&& playerPawn = baseEntity.template as<PlayerPawn>();
             hookContext.template make<PlayerInfoInWorld>().drawPlayerInformation(playerPawn);
+            hookContext.template make<Wallhack>().drawForPlayer(playerPawn);
             updateModelGlow<PlayerModelGlow>(playerPawn, entityTypeInfo);
             applyOutlineGlow<PlayerOutlineGlow>(playerPawn, entityTypeInfo);
             if (bombPlantAlertVisibility != Visibility::Visible)

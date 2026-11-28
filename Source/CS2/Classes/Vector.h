@@ -21,7 +21,33 @@ struct Vector {
         return Vector{a.x - b.x, a.y - b.y, a.z - b.z};
     }
 
+    [[nodiscard]] friend constexpr Vector operator+(const Vector& a, const Vector& b) noexcept
+    {
+        return Vector{a.x + b.x, a.y + b.y, a.z + b.z};
+    }
+
+    [[nodiscard]] friend constexpr Vector operator*(const Vector& a, float s) noexcept
+    {
+        return Vector{a.x * s, a.y * s, a.z * s};
+    }
+
+    [[nodiscard]] friend constexpr Vector operator-(const Vector& a, float s) noexcept
+    {
+        return Vector{a.x - s, a.y - s, a.z - s};
+    }
+
+    [[nodiscard]] Vector& operator+=(const Vector& other) noexcept
+    {
+        x += other.x; y += other.y; z += other.z;
+        return *this;
+    }
+
     [[nodiscard]] bool operator==(const Vector&) const = default;
+
+    [[nodiscard]] static float distance(const Vector& a, const Vector& b) noexcept
+    {
+        return std::sqrt(a.squareDistTo(b));
+    }
 };
 
 }

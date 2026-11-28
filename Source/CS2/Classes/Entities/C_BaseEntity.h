@@ -22,6 +22,8 @@ struct C_BaseEntity : CEntityInstance {
     using m_pRenderComponent = CRenderComponent*;
     using m_hOwnerEntity = CEntityHandle;
     using GetAbsOrigin = Vector*(C_BaseEntity* thisptr);
+    using GetAbsVelocity = Vector*(C_BaseEntity* thisptr);
+    using SetAbsVelocity = void(C_BaseEntity* thisptr, const Vector& velocity);
 };
 
 }

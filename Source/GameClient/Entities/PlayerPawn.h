@@ -95,6 +95,24 @@ public:
         return baseEntity().absOrigin();
     }
 
+    [[nodiscard]] std::optional<cs2::Vector> velocity() const noexcept
+    {
+        if (const auto fn = hookContext.patternSearchResults().template get<GetAbsVelocityFunction>())
+            return *fn(playerPawn);
+        return std::nullopt;
+    }
+
+    void setVelocity(const cs2::Vector& velocity) const noexcept
+    {
+        if (const auto fn = hookContext.patternSearchResults().template get<SetAbsVelocityFunction>())
+            fn(playerPawn, velocity);
+    }
+
+    [[nodiscard]] std::optional<cs2::Vector> eyeAngles() const noexcept
+    {
+        return hookContext.patternSearchResults().template get<OffsetToEyeAngles>().of(playerPawn).toOptional();
+    }
+
     [[nodiscard]] bool isControlledByLocalPlayer() const noexcept
     {
         return playerController() == hookContext.localPlayerController();

@@ -9,6 +9,7 @@
 #include <GameClient/Panorama/PanoramaSymbols.h>
 #include <OutlineGlow/GlowSceneObjectState.h>
 #include <GameClient/DLLs/Tier0Dll.h>
+#include <GameClient/InputState.h>
 #include <GameClient/DLLs/WorldRendererDll.h>
 #include <GameClient/Entities/EntityClassifier.h>
 #include <Features/Common/InWorldPanelsPerHookState.h>
@@ -80,4 +81,5 @@ struct FullGlobalContext {
     InWorldPanelsPerHookState inWorldPanelsPerHookState;
     PlayerInfoPanelCachePerHookState playerInfoPanelCachePerHookState;
     GameMemoryValidatorState gameMemoryValidatorState;
+    InputState inputState;
 };

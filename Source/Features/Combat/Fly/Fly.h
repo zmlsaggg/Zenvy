@@ -1,25 +1,20 @@
 #pragma once
 
 #include <cmath>
+
+#include <CS2/Classes/Vector.h>
 #include <Features/Common/InWorldPanels.h>
-#include <Features/Common/RenderingHookEntityLoop.h>
-#include <Features/Visuals/ModelGlow/ModelGlow.h>
-#include <GameClient/Entities/BaseEntity.h>
-#include <GameClient/Entities/BaseModelEntity.h>
 #include <GameClient/Entities/PlayerPawn.h>
-#include <GameClient/LocalPlayer/LocalPlayer.h>
-#include <GameClient/WorldToScreen/WorldToClipSpaceConverter.h>
-#include <GameClient/Panorama/PanoramaUiPanel.h>
-#include <Utils/ConfigVariable.h>
+#include <Config/ConfigVariable.h>
 
 #include "FlyConfigVariables.h"
+#include "FlyState.h"
 
 template <typename HookContext>
 class Fly {
 public:
     explicit Fly(HookContext& hookContext) noexcept
         : hookContext{hookContext}
-        , velocity{0.0f, 0.0f, 0.0f}
     {
     }
 
@@ -28,33 +23,28 @@ public:
         if (!enabled())
             return;
 
-        auto&& localPlayer = hookContext.template make<LocalPlayer>();
-        if (!localPlayer.hasValue())
+        auto&& playerPawn = hookContext.activeLocalPlayerPawn();
+        if (!playerPawn || !playerPawn.isAlive().valueOr(false))
             return;
 
-        auto&& playerPawn = localPlayer.template as<PlayerPawn>();
         const auto absOrigin = playerPawn.absOrigin();
         if (!absOrigin.hasValue())
             return;
 
-        // Get current velocity
-        auto&& currentVelocity = playerPawn.velocity().valueOr(cs2::Vector{0.0f, 0.0f, 0.0f});
+        const auto currentVelocity = playerPawn.velocity().valueOr(cs2::Vector{});
+        const auto targetVelocity = calculateTargetVelocity(playerPawn);
 
-        // Calculate target velocity based on input
-        cs2::Vector targetVelocity = calculateTargetVelocity(playerPawn, currentVelocity);
-
-        // Smooth transition to target velocity
-        velocity = lerpVelocity(currentVelocity, targetVelocity, accelerationFactor());
-
-        // Apply velocity
-        playerPawn.setVelocity(velocity);
-
-        // Draw direction indicator
-        if (showDirectionIndicator() && velocity != cs2::Vector{0.0f, 0.0f, 0.0f})
-            drawDirectionIndicator(absOrigin.value(), velocity);
+        auto& stored = state().velocity;
+        stored = lerpVelocity(currentVelocity, targetVelocity, accelerationFactor());
+        playerPawn.setVelocity(stored);
     }
 
 private:
+    [[nodiscard]] static constexpr float degToRad(float deg) noexcept
+    {
+        return deg * 3.14159265358979f / 180.0f;
+    }
+
     [[nodiscard]] bool enabled() const noexcept
     {
         return GET_CONFIG_VAR(fly_vars::Enabled);
@@ -72,53 +62,33 @@ private:
 
     [[nodiscard]] float accelerationFactor() const noexcept
     {
-        return GET_CONFIG_VAR(fly_vars::Acceleration).value_or(0.1f);
+        const auto value = GET_CONFIG_VAR(fly_vars::Acceleration).value_or(0.1f);
+        return value <= 0.0f ? 0.01f : (value > 1.0f ? 1.0f : value);
     }
 
-    [[nodiscard]] bool showDirectionIndicator() const noexcept
+    [[nodiscard]] cs2::Vector calculateTargetVelocity(auto&& playerPawn) const noexcept
     {
-        return GET_CONFIG_VAR(fly_vars::ShowDirectionIndicator).value_or(true);
-    }
+        cs2::Vector target{};
 
-    [[nodiscard]] cs2::Vector calculateTargetVelocity(auto&& playerPawn, const cs2::Vector& currentVelocity) const noexcept
-    {
-        cs2::Vector target{0.0f, 0.0f, 0.0f};
+        const auto angles = playerPawn.eyeAngles().valueOr(cs2::Vector{});
+        const auto pitch = degToRad(angles.x);
+        const auto yaw = degToRad(angles.y);
 
-        // Get forward and right vectors from player view
-        const auto eyePosition = playerPawn.eyePosition().valueOr(cs2::Vector{0.0f, 0.0f, 0.0f});
-        const auto forward = playerPawn.forward().valueOr(cs2::Vector{0.0f, 1.0f, 0.0f});
-        const auto right = playerPawn.right().valueOr(cs2::Vector{1.0f, 0.0f, 0.0f});
+        const cs2::Vector forward{std::cos(pitch) * std::cos(yaw), std::cos(pitch) * std::sin(yaw), -std::sin(pitch)};
+        const cs2::Vector right{std::sin(yaw), -std::cos(yaw), 0.0f};
 
-        // Horizontal movement (WASD)
-        if (input()->GetKeyState(VK_W))
-            target += forward * speed();
-        if (input()->GetKeyState(VK_S))
-            target -= forward * speed();
-        if (input()->GetKeyState(VK_D))
-            target += right * speed();
-        if (input()->GetKeyState(VK_A))
-            target -= right * speed();
-
-        // Vertical movement (Space/Shift)
-        if (input()->GetKeyState(VK_SPACE))
-            target.z += verticalSpeed();
-        if (input()->GetKeyState(VK_SHIFT))
-            target.z -= verticalSpeed();
+        const auto& input = hookContext.inputState();
+        if (input.keyDown(VK_W)) target += forward * speed();
+        if (input.keyDown(VK_S)) target += forward * (-speed());
+        if (input.keyDown(VK_D)) target += right * speed();
+        if (input.keyDown(VK_A)) target += right * (-speed());
+        if (input.keyDown(VK_SPACE)) target.z += verticalSpeed();
+        if (input.keyDown(VK_SHIFT)) target.z -= verticalSpeed();
 
         return target;
     }
 
-    void drawDirectionIndicator(const cs2::Vector& position, const cs2::Vector& direction) const noexcept
-    {
-        if (!showDirectionIndicator())
-            return;
-
-        // Draw direction indicator panel
-        auto&& panel = hookContext.template make<InWorldPanels>().getNextPlayerInfoPanel();
-        panel.updatePosition(position);
-    }
-
-    [[nodiscard]] cs2::Vector lerpVelocity(const cs2::Vector& from, const cs2::Vector& to, float factor) const noexcept
+    [[nodiscard]] static cs2::Vector lerpVelocity(const cs2::Vector& from, const cs2::Vector& to, float factor) noexcept
     {
         return cs2::Vector{
             from.x + (to.x - from.x) * factor,
@@ -127,11 +97,10 @@ private:
         };
     }
 
-    [[nodiscard]] decltype(auto) input() const noexcept
+    [[nodiscard]] auto& state() const noexcept
     {
-        return hookContext.template make<InWorldPanels>().input();
+        return hookContext.featuresStates().combatFeaturesStates.flyState;
     }
 
-    mutable HookContext& hookContext;
-    mutable cs2::Vector velocity;
+    HookContext& hookContext;
 };

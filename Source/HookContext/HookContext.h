@@ -279,6 +279,11 @@ struct HookContext {
         return fullGlobalContext.gameMemoryValidatorState;
     }
 
+    [[nodiscard]] InputState& inputState() const noexcept
+    {
+        return fullGlobalContext.inputState;
+    }
+
 private:
     [[nodiscard]] cs2::CPlantedC4* getPlantedC4() const noexcept
     {
