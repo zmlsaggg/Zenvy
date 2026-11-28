@@ -45,6 +45,7 @@ int SDLHook_PeepEvents(void* events, int numevents, int action, unsigned minType
     hookContext.template make<PlayerModelGlowPreview>().onUnload();
     hookContext.template make<WeaponModelGlowPreview>().onUnload();
     hookContext.template make<NoScopeInaccuracyVis>().onUnload();
+    hookContext.template make<Wallhack>().onUnload();
     hookContext.template make<BombPlantAlert>().onUnload();
 
     hookContext.template make<EntitySystem>().forEachNetworkableEntityIdentity([&hookContext](const auto& entityIdentity) {
@@ -75,9 +76,9 @@ void ViewRenderHook_onRenderStart(cs2::CViewRender* thisptr) noexcept
     soundWatcher.update();
     SoundFeatures{hookContext.soundWatcherState(), hookContext.hooks().viewRenderHook, hookContext}.runOnViewMatrixUpdate();
 
+    hookContext.updateInputState();
+    hookContext.make<Fly>().run();
     hookContext.make<NoScopeInaccuracyVis>().update();
-    // Temporary isolation: bypass the two newly added per-frame callbacks to locate
-    // the immediate post-injection crash without changing their implementations.
     hookContext.make<RenderingHookEntityLoop>().run();
     hookContext.make<GlowSceneObjects>().removeUnreferencedObjects();
     hookContext.make<DefusingAlert>().run();

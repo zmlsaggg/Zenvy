@@ -108,7 +108,7 @@ public:
             fn(playerPawn, velocity);
     }
 
-    [[nodiscard]] std::optional<cs2::Vector> eyeAngles() const noexcept
+    [[nodiscard]] auto eyeAngles() const noexcept
     {
         return hookContext.patternSearchResults().template get<OffsetToEyeAngles>().of(playerPawn).toOptional();
     }

@@ -82,6 +82,7 @@ public:
         const auto partialContext = deferredCompleteContext.partial();
         deferredCompleteContext.makeComplete(
             partialContext.peepEventsHook,
+            partialContext.sdlGetKeyboardState,
             partialContext.clientDLL,
             partialContext.panoramaDLL,
             MemoryPatterns{partialContext.patternFinders},

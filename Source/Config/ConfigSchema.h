@@ -177,6 +177,13 @@ private:
 
         configConversion.beginObject(u8"Wallhack");
         configConversion.boolean(u8"Enabled", loadVariable<wallhack_vars::Enabled>(), saveVariable<wallhack_vars::Enabled>());
+        configConversion.boolean(u8"ShowEnemies", loadVariable<wallhack_vars::ShowEnemies>(), saveVariable<wallhack_vars::ShowEnemies>());
+        configConversion.boolean(u8"ShowTeammates", loadVariable<wallhack_vars::ShowTeammates>(), saveVariable<wallhack_vars::ShowTeammates>());
+        configConversion.boolean(u8"ShowBoxes", loadVariable<wallhack_vars::ShowBoxes>(), saveVariable<wallhack_vars::ShowBoxes>());
+        configConversion.boolean(u8"ShowSkeleton", loadVariable<wallhack_vars::ShowSkeleton>(), saveVariable<wallhack_vars::ShowSkeleton>());
+        configConversion.boolean(u8"ShowInfo", loadVariable<wallhack_vars::ShowInfo>(), saveVariable<wallhack_vars::ShowInfo>());
+        configConversion.boolean(u8"ShowDistance", loadVariable<wallhack_vars::ShowDistance>(), saveVariable<wallhack_vars::ShowDistance>());
+        configConversion.boolean(u8"ShowHealth", loadVariable<wallhack_vars::ShowHealth>(), saveVariable<wallhack_vars::ShowHealth>());
         configConversion.endObject();
 
         configConversion.endObject();

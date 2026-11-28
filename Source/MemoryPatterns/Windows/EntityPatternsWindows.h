@@ -14,8 +14,8 @@ struct EntityPatterns {
             .template addPattern<OffsetToVData, CodePattern{"89 ? ? ? ? 48 85 C9 74 ? 48 8B 49 ? 48 8D"}.add(1).read()>()
             .template addPattern<OffsetToRenderComponent, CodePattern{"0F 84 ? ? ? ? 49 8B 8D ? ? ? ? 48 85 C9"}.add(9).read()>()
             .template addPattern<OffsetToOwnerEntity, CodePattern{"44 8B 81 ? ? ? ? 4C 8B DA 4C"}.add(3).read()>()
-            .template addPattern<GetAbsOriginFunction, CodePattern{"F8 ? 75 ? E8 ? ? ? ? F3"}.add(5).abs>()
-            .template addPattern<GetAbsVelocityFunction, CodePattern{"E8 ? ? ? ? F3 0F 10 ? ? ? ? ? F3 0F 11"}.add(1).resolve>()
-            .template addPattern<SetAbsVelocityFunction, CodePattern{"48 89 5C 24 ? 57 48 83 EC 20 48 8B FA 48 8B D9 E8"}.read()>();
+            .template addPattern<GetAbsOriginFunction, CodePattern{"F8 ? 75 ? E8 ? ? ? ? F3"}.add(5).abs()>()
+            .template addPattern<GetAbsVelocityFunction, CodePattern{"E8 ? ? ? ? F3 0F 10 ? ? ? ? ? F3 0F 11"}.add(1).abs()>()
+            .template addPattern<SetAbsVelocityFunction, CodePattern{"48 89 5C 24 ? 57 48 83 EC 20 48 8B FA 48 8B D9 E8"}>();
     }
 };
