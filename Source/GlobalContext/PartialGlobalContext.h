@@ -22,6 +22,7 @@ struct PartialGlobalContext {
         , clientDLL{clientDLL}
         , panoramaDLL{panoramaDLL}
         , peepEventsHook{MemoryPatterns{patternFinders}.sdlPatterns().peepEventsPointer(sdlDLL.peepEvents())}
+        , sdlGetKeyboardState{sdlDLL.getKeyboardState()}
     {
     }
 
@@ -29,6 +30,7 @@ struct PartialGlobalContext {
     DynamicLibrary clientDLL;
     DynamicLibrary panoramaDLL;
     PeepEventsHook peepEventsHook;
+    sdl3::SDL_GetKeyboardState* sdlGetKeyboardState{};
 
     void enableIfValid() noexcept
     {
