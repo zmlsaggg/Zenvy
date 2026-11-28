@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cmath>
 #include <cstdint>
 
 #include <SDL/SdlFunctions.h>
@@ -48,6 +47,26 @@ private:
         return deg * 3.14159265358979f / 180.0f;
     }
 
+    [[nodiscard]] static float fastSin(float angle) noexcept
+    {
+        constexpr float kPi = 3.14159265358979f;
+        constexpr float kTwoPi = 6.28318530717959f;
+        while (angle > kPi)
+            angle -= kTwoPi;
+        while (angle < -kPi)
+            angle += kTwoPi;
+
+        const auto sign = angle < 0.0f ? -1.0f : 1.0f;
+        const auto x = angle * sign;
+        const auto parabola = (4.0f / kPi) * x - (4.0f / (kPi * kPi)) * x * x;
+        return sign * (parabola + 0.225f * (parabola * parabola - parabola));
+    }
+
+    [[nodiscard]] static float fastCos(float angle) noexcept
+    {
+        return fastSin(angle + 1.5707963267949f);
+    }
+
     [[nodiscard]] bool enabled() const noexcept
     {
         return GET_CONFIG_VAR(fly_vars::Enabled);
@@ -82,8 +101,12 @@ private:
         const auto pitch = degToRad(angles.x);
         const auto yaw = degToRad(angles.y);
 
-        const cs2::Vector forward{std::cos(pitch) * std::cos(yaw), std::cos(pitch) * std::sin(yaw), -std::sin(pitch)};
-        const cs2::Vector right{std::sin(yaw), -std::cos(yaw), 0.0f};
+        const auto sinPitch = fastSin(pitch);
+        const auto cosPitch = fastCos(pitch);
+        const auto sinYaw = fastSin(yaw);
+        const auto cosYaw = fastCos(yaw);
+        const cs2::Vector forward{cosPitch * cosYaw, cosPitch * sinYaw, -sinPitch};
+        const cs2::Vector right{sinYaw, -cosYaw, 0.0f};
 
         const auto& input = hookContext.inputState();
         if (input.keyDown(sdl3::SDL_SCANCODE_W)) target = target + forward * speed();
