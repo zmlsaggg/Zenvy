@@ -50,20 +50,25 @@ private:
         return GET_CONFIG_VAR(fly_vars::Enabled);
     }
 
+    [[nodiscard]] float speedMultiplier() const noexcept
+    {
+        const auto value = GET_CONFIG_VAR(fly_vars::SpeedMultiplier);
+        return value < 0.1f ? 0.1f : (value > 5.0f ? 5.0f : value);
+    }
+
     [[nodiscard]] float speed() const noexcept
     {
-        return GET_CONFIG_VAR(fly_vars::Speed).value_or(300.0f);
+        return 300.0f * speedMultiplier();
     }
 
     [[nodiscard]] float verticalSpeed() const noexcept
     {
-        return GET_CONFIG_VAR(fly_vars::VerticalSpeed).value_or(200.0f);
+        return 200.0f * speedMultiplier();
     }
 
-    [[nodiscard]] float accelerationFactor() const noexcept
+    [[nodiscard]] static constexpr float accelerationFactor() noexcept
     {
-        const auto value = GET_CONFIG_VAR(fly_vars::Acceleration).value_or(0.1f);
-        return value <= 0.0f ? 0.01f : (value > 1.0f ? 1.0f : value);
+        return 0.1f;
     }
 
     [[nodiscard]] cs2::Vector calculateTargetVelocity(auto&& playerPawn) const noexcept
