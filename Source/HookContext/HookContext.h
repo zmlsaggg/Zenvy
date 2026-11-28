@@ -295,7 +295,7 @@ struct HookContext {
 
         int keyCount{};
         const auto* keyboardState = getKeyboardState(&keyCount);
-        if (!keyboardState || keyCount <= sdl3::SDL_SCANCODE_RSHIFT) {
+        if (!keyboardState || keyCount <= sdl3::SDL_SCANCODE_RALT) {
             inputState().clear();
             return;
         }
