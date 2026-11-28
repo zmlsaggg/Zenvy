@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdint>
 
-#include <Platform/Macros/IsPlatform.h>
+#include <SDL/SdlFunctions.h>
 
 #include <CS2/Classes/Vector.h>
 #include <Features/Common/InWorldPanels.h>
@@ -15,13 +15,6 @@
 
 template <typename HookContext>
 class Fly {
-    static constexpr std::uint32_t kForwardKey = IS_WIN64() ? 0x57u : 26u;
-    static constexpr std::uint32_t kBackwardKey = IS_WIN64() ? 0x53u : 22u;
-    static constexpr std::uint32_t kRightKey = IS_WIN64() ? 0x44u : 7u;
-    static constexpr std::uint32_t kLeftKey = IS_WIN64() ? 0x41u : 4u;
-    static constexpr std::uint32_t kJumpKey = IS_WIN64() ? 0x20u : 44u;
-    static constexpr std::uint32_t kDescendKey = IS_WIN64() ? 0x10u : 225u;
-
 public:
     explicit Fly(HookContext& hookContext) noexcept
         : hookContext{hookContext}
@@ -93,12 +86,12 @@ private:
         const cs2::Vector right{std::sin(yaw), -std::cos(yaw), 0.0f};
 
         const auto& input = hookContext.inputState();
-        if (input.keyDown(kForwardKey)) target += forward * speed();
-        if (input.keyDown(kBackwardKey)) target += forward * (-speed());
-        if (input.keyDown(kRightKey)) target += right * speed();
-        if (input.keyDown(kLeftKey)) target += right * (-speed());
-        if (input.keyDown(kJumpKey)) target.z += verticalSpeed();
-        if (input.keyDown(kDescendKey)) target.z -= verticalSpeed();
+        if (input.keyDown(sdl3::SDL_SCANCODE_W)) target += forward * speed();
+        if (input.keyDown(sdl3::SDL_SCANCODE_S)) target += forward * (-speed());
+        if (input.keyDown(sdl3::SDL_SCANCODE_D)) target += right * speed();
+        if (input.keyDown(sdl3::SDL_SCANCODE_A)) target += right * (-speed());
+        if (input.keyDown(sdl3::SDL_SCANCODE_SPACE)) target.z += verticalSpeed();
+        if (input.keyDown(sdl3::SDL_SCANCODE_LSHIFT)) target.z -= verticalSpeed();
 
         return target;
     }
