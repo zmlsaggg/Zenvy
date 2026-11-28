@@ -22,8 +22,11 @@ public:
 
     void run() const noexcept
     {
+        auto&& wallhack = hookContext.template make<Wallhack>();
+        wallhack.beginFrame();
         auto bombPlantAlertVisibility = Visibility::Hidden;
         hookContext.template make<EntitySystem>().forEachNetworkableEntityIdentity([this, &bombPlantAlertVisibility](const auto& entityIdentity) { handleEntityIdentity(entityIdentity, bombPlantAlertVisibility); });
+        wallhack.endFrame();
         hookContext.template make<ModelGlow>().postUpdateInMainThread();
         if (bombPlantAlertVisibility == Visibility::Hidden)
             hookContext.template make<BombPlantAlert>().hide();
