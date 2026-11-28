@@ -15,6 +15,11 @@ struct SdlDll : DynamicLibrary {
         return getFunctionAddress("SDL_PeepEvents").as<sdl3::SDL_PeepEvents*>();
     }
 
+    [[nodiscard]] sdl3::SDL_GetKeyboardState* getKeyboardState() const noexcept
+    {
+        return getFunctionAddress("SDL_GetKeyboardState").as<sdl3::SDL_GetKeyboardState*>();
+    }
+
     [[nodiscard]] sdl3::SDL_ShowSimpleMessageBox* showSimpleMessageBox() const noexcept
     {
         return getFunctionAddress("SDL_ShowSimpleMessageBox").as<sdl3::SDL_ShowSimpleMessageBox*>();
