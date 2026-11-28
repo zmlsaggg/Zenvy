@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cmath>
+#include <bit>
+#include <cstdint>
 
 namespace cs2
 {
@@ -48,7 +49,17 @@ struct Vector {
 
     [[nodiscard]] static float distance(const Vector& a, const Vector& b) noexcept
     {
-        return std::sqrt(a.squareDistTo(b));
+        const auto squaredDistance = a.squareDistTo(b);
+        if (squaredDistance <= 0.0f)
+            return 0.0f;
+
+        auto bits = std::bit_cast<std::uint32_t>(squaredDistance);
+        bits = 0x5F3759DFu - (bits >> 1);
+        auto inverseSqrt = std::bit_cast<float>(bits);
+        const auto halfDistance = squaredDistance * 0.5f;
+        inverseSqrt *= 1.5f - halfDistance * inverseSqrt * inverseSqrt;
+        inverseSqrt *= 1.5f - halfDistance * inverseSqrt * inverseSqrt;
+        return squaredDistance * inverseSqrt;
     }
 };
 
