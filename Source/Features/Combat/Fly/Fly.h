@@ -88,6 +88,15 @@ private:
         return 200.0f * speedMultiplier();
     }
 
+    [[nodiscard]] std::uint32_t descendKey() const noexcept
+    {
+        switch (GET_CONFIG_VAR(fly_vars::FlyKey)) {
+        case 1: return sdl3::SDL_SCANCODE_LCTRL;
+        case 2: return sdl3::SDL_SCANCODE_LALT;
+        default: return sdl3::SDL_SCANCODE_LSHIFT;
+        }
+    }
+
     [[nodiscard]] static constexpr float accelerationFactor() noexcept
     {
         return 0.1f;
@@ -114,7 +123,7 @@ private:
         if (input.keyDown(sdl3::SDL_SCANCODE_D)) target = target + right * speed();
         if (input.keyDown(sdl3::SDL_SCANCODE_A)) target = target + right * (-speed());
         if (input.keyDown(sdl3::SDL_SCANCODE_SPACE)) target.z += verticalSpeed();
-        if (input.keyDown(sdl3::SDL_SCANCODE_LSHIFT)) target.z -= verticalSpeed();
+        if (input.keyDown(descendKey())) target.z -= verticalSpeed();
 
         return target;
     }
