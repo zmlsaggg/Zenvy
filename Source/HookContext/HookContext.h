@@ -309,6 +309,10 @@ struct HookContext {
         input.setKey(sdl3::SDL_SCANCODE_SPACE, keyboardState[sdl3::SDL_SCANCODE_SPACE]);
         input.setKey(sdl3::SDL_SCANCODE_LSHIFT,
             keyboardState[sdl3::SDL_SCANCODE_LSHIFT] || keyboardState[sdl3::SDL_SCANCODE_RSHIFT]);
+        input.setKey(sdl3::SDL_SCANCODE_LCTRL,
+            keyboardState[sdl3::SDL_SCANCODE_LCTRL] || keyboardState[sdl3::SDL_SCANCODE_RCTRL]);
+        input.setKey(sdl3::SDL_SCANCODE_LALT,
+            keyboardState[sdl3::SDL_SCANCODE_LALT] || keyboardState[sdl3::SDL_SCANCODE_RALT]);
     }
 
 private:
