@@ -78,7 +78,7 @@ private:
     {
         cs2::Vector target{};
 
-        const auto angles = playerPawn.eyeAngles().value_or(cs2::Vector{});
+        const auto angles = playerPawn.eyeAngles().valueOr(cs2::Vector{});
         const auto pitch = degToRad(angles.x);
         const auto yaw = degToRad(angles.y);
 
@@ -86,10 +86,10 @@ private:
         const cs2::Vector right{std::sin(yaw), -std::cos(yaw), 0.0f};
 
         const auto& input = hookContext.inputState();
-        if (input.keyDown(sdl3::SDL_SCANCODE_W)) target += forward * speed();
-        if (input.keyDown(sdl3::SDL_SCANCODE_S)) target += forward * (-speed());
-        if (input.keyDown(sdl3::SDL_SCANCODE_D)) target += right * speed();
-        if (input.keyDown(sdl3::SDL_SCANCODE_A)) target += right * (-speed());
+        if (input.keyDown(sdl3::SDL_SCANCODE_W)) target = target + forward * speed();
+        if (input.keyDown(sdl3::SDL_SCANCODE_S)) target = target + forward * (-speed());
+        if (input.keyDown(sdl3::SDL_SCANCODE_D)) target = target + right * speed();
+        if (input.keyDown(sdl3::SDL_SCANCODE_A)) target = target + right * (-speed());
         if (input.keyDown(sdl3::SDL_SCANCODE_SPACE)) target.z += verticalSpeed();
         if (input.keyDown(sdl3::SDL_SCANCODE_LSHIFT)) target.z -= verticalSpeed();
 
