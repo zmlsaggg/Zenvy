@@ -29,6 +29,7 @@ public:
             return;
 
         auto& skeleton = state().skeletons[index];
+        skeleton.active = true;
         if (!enabled() || !shouldDraw(playerPawn)) {
             hideSkeleton(skeleton);
             return;
@@ -52,6 +53,20 @@ public:
             drawSkeleton(playerPawn, absOrigin.value(), skeleton);
         else
             hideSkeleton(skeleton);
+    }
+
+    void beginFrame() const noexcept
+    {
+        for (auto& skeleton : state().skeletons)
+            skeleton.active = false;
+    }
+
+    void endFrame() const noexcept
+    {
+        for (auto& skeleton : state().skeletons) {
+            if (!skeleton.active)
+                hideSkeleton(skeleton);
+        }
     }
 
     void onUnload() const noexcept
