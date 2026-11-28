@@ -1,9 +1,10 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 struct InputState {
-    static constexpr std::uint8_t kKeyCount = 256;
+    static constexpr std::size_t kKeyCount = 256;
 
     void setKey(std::uint32_t key, bool down) noexcept
     {
