@@ -104,5 +104,12 @@ using ConfigVariableTypes = TypeList<
     fly_vars::SpeedMultiplier,
     fly_vars::FlyKey,
     wallhack_vars::Enabled,
+    wallhack_vars::ShowEnemies,
+    wallhack_vars::ShowTeammates,
+    wallhack_vars::ShowBoxes,
+    wallhack_vars::ShowSkeleton,
+    wallhack_vars::ShowInfo,
+    wallhack_vars::ShowDistance,
+    wallhack_vars::ShowHealth,
     BombPlantAlertEnabled
 >;
