@@ -17,6 +17,7 @@
 #include <MemoryPatterns/PatternTypes/PlantedC4PatternTypes.h>
 #include <GameClient/Panorama/PanelFactory.h>
 #include <GameClient/GlobalVars.h>
+#include <SDL/SdlFunctions.h>
 #include <GameClient/Panorama/PanoramaTransformFactory.h>
 
 struct BombStatusPanelState;
@@ -282,6 +283,32 @@ struct HookContext {
     [[nodiscard]] InputState& inputState() const noexcept
     {
         return fullGlobalContext.inputState;
+    }
+
+    void updateInputState() const noexcept
+    {
+        const auto getKeyboardState = fullGlobalContext.sdlGetKeyboardState;
+        if (!getKeyboardState) {
+            inputState().clear();
+            return;
+        }
+
+        int keyCount{};
+        const auto* keyboardState = getKeyboardState(&keyCount);
+        if (!keyboardState || keyCount <= sdl3::SDL_SCANCODE_RSHIFT) {
+            inputState().clear();
+            return;
+        }
+
+        auto& input = inputState();
+        input.clear();
+        input.setKey(sdl3::SDL_SCANCODE_W, keyboardState[sdl3::SDL_SCANCODE_W]);
+        input.setKey(sdl3::SDL_SCANCODE_A, keyboardState[sdl3::SDL_SCANCODE_A]);
+        input.setKey(sdl3::SDL_SCANCODE_S, keyboardState[sdl3::SDL_SCANCODE_S]);
+        input.setKey(sdl3::SDL_SCANCODE_D, keyboardState[sdl3::SDL_SCANCODE_D]);
+        input.setKey(sdl3::SDL_SCANCODE_SPACE, keyboardState[sdl3::SDL_SCANCODE_SPACE]);
+        input.setKey(sdl3::SDL_SCANCODE_LSHIFT,
+            keyboardState[sdl3::SDL_SCANCODE_LSHIFT] || keyboardState[sdl3::SDL_SCANCODE_RSHIFT]);
     }
 
 private:
