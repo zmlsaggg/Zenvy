@@ -151,10 +151,12 @@ public:
       onactivate: "MainMenu.NavigateToTab('FunBunMenuTab', '');"
     });
 
-    $.CreatePanel('Image', openMenuButton, 'FunBunRabbitIcon', {
+    // Keep the navbar control self-contained: do not fetch branding assets
+    // from GitHub (or any other remote host) at game runtime.
+    $.CreatePanel('Label', openMenuButton, 'FunBunBrandMark', {
       class: "mainmenu-top-navbar__radio-btn__icon",
-      src: "https://raw.githubusercontent.com/zmlsaggg/FunBun/master/Source/UI/Panorama/%D0%9D%D0%B5%D0%BE%D0%BD%D0%BE%D0%B2%D1%8B%D0%B9%20%D0%BA%D1%80%D0%BE%D0%BB%D0%B8%D0%BA%20FunBun%20CS2.png",
-      style: "width: 28px; height: 28px; horizontal-align: center; vertical-align: center; wash-color: white;"
+      text: "FB",
+      style: "width: 28px; height: 28px; font-size: 15px; font-weight: bold; text-align: center; vertical-align: center; color: white;"
     });
 
     $.DispatchEvent('Activated', context.FindChildTraverse("MainMenuNavBarHome"), 'mouse');
